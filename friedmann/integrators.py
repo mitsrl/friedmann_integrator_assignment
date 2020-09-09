@@ -40,6 +40,14 @@ class CumulativeSumIntegrator:
         # *self* is an implicit method parameter. It is how you refer to the
         # object from within the object.
         Omega_lam = 1 - Omega_r - Omega_m
+
+        # Always good to check user input.
+        if H0 <= 0:
+            raise ValueError("Hubble constant must be positive.")
+        for om in (Omega_m, Omega_r, Omega_lam):
+            if om < 0 or om > 1:
+                raise ValueError("Invalid Omegas.")
+
         # Here we *store* data in the object. We are renaming the variables to begin
         # with an '_'. This is called *encapsulation*, and signals to users of the
         # code not to change thier values or risk getting inconsistent results.
@@ -55,20 +63,24 @@ class CumulativeSumIntegrator:
 
         # Choose scale factors at which we will evaluate the integrals. I'm choosing
         # logarithmic spacing here, since the P-set askes for a log-log plot.
+        # The last point in this array is a=1, the value at the present day.
         self._a = np.logspace(-7, 0, 1000, endpoint=True)
 
         # Most of the setup for the class is complete. Perform the numerical integrals.
-        self.integrate()
+        self._integrate()
 
-    def integrate(self):
+    def _integrate(self):
         """This is wrong unless Omega_m = 1."""
 
+        # Time variables multiplied by H0, which is unitless.
+        # In general in numerics you want to be dealing with
+        # dimensionless numbers, adding in dimensionful factors after the calculation.
         self._tH0 = 2 / 3 *self._a ** (3 / 2)
-        self._etaH0 = 2 * np.sqrt(a)
+        self._etaH0 = 2 * np.sqrt(self._a)
 
         # To implement this propertly, write down the differential equations for eta and t
         # in terms of the scale factor a. Notice that these are separable so the solution may
-        # be written as an integral. Unfortunately, the integral is in general not analytic so must
+        # be written as an integral. Unfortunately, the integral is not analytic so must
         # be done numerically.  Write an approximation to the integrals as a Riemann sum (with
         # non-uniform step spacing). Code up the sums, making use of the functions numpy.diff() and
         # numpy.cumsum() (see the online documentation for these functions).
@@ -102,11 +114,11 @@ class CumulativeSumIntegrator:
     @property
     def hubble_parameter(self):
         """This is wrong unless Omega_m = 1."""
-        return H0 / self._a**2
+        return self.H0 / self._a**2
 
     @property
     def comoving_distance(self):
-        return self._hubble_distance * (self._etaH0[0] - self._etaH0)
+        return self._hubble_distance * (self._etaH0[-1] - self._etaH0)
 
     @property
     def luminocity_distance(self):

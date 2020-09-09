@@ -19,11 +19,11 @@ def test_matter_dominated():
 
     assert integ.hubble_distance == pytest.approx(HUBBLE_DISTANCE, 0.1)
 
-def test_lambda_dominated()
+def test_lambda_dominated():
     integ = integrators.CumulativeSumIntegrator(0, 0, 100)
     # For lambda domination Hubble parameter is constant.
     assert np.allclose(integ.hubble_parameter, 100)
 
-def test_radiation_dominated()
+def test_radiation_dominated():
     integ = integrators.CumulativeSumIntegrator(1, 0, 100)
 
