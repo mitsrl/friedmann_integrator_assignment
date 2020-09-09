@@ -1,2 +1,2 @@
-# 8.942-hello-world
-Environment setup tutorial for 8.942
+# Friedmann Equation Integrator Assignment
+Starter code for 8.942
